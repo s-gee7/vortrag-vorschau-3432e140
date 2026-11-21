@@ -2263,6 +2263,9 @@ html[data-design="hr"] .kap .kap-fenster i.an{background:#0077D4;border-color:#0
 .slide.df-schluss{background:#03060f}
 .df-schluss .df-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
 
+/* Bühne nie stauchen: auf Bildschirmen unter 1280 px Breite schrumpfte #stage als Flex-Kind (iPhone quer, 21.11.2026) */
+#stage{flex-shrink:0;min-width:1280px}
+
 
 /* ===== folien.css (state-of-ai-df-2026-12) ===== */
 /* ERZEUGT von _bauen.py aus css/*.css, nicht von Hand aendern */
@@ -2285,6 +2288,9 @@ html[data-design="hr"] .kap .kap-fenster i.an{background:#0077D4;border-color:#0
 /* Standbild je Zeichenflaeche fuer den Druck (js/zz-ende.js, druckbilder) */
 .df-druckbild{display:none}
 @media print{ .df-druckbild{display:block} }
+
+/* Bühne nie stauchen: auf Bildschirmen unter 1280 px Breite schrumpfte #stage als Flex-Kind (iPhone quer, 21.11.2026) */
+#stage{flex-shrink:0;min-width:1280px}
 
 
 /* ===== css/k0-countdown.css ===== */
@@ -4824,7 +4830,7 @@ rect.mt-b{fill:url(#k2metr-balken)}
 
 
 </style>
-<style>#stage{flex-shrink:0!important;min-width:1280px}</style></head>
+</head>
 <body>
 <div id="viewport">
 <div id="stage">
@@ -8134,7 +8140,11 @@ var FX = (function(){
     status: function(){ return !an ? 'aus' : calm() ? 'an, im Teams-Modus stumm' : 'an'; },
     toggle: function(){ an = !an; store.set('fxton', an ? 'an' : 'aus'); if (an && !calm()) { ctx(); spiel('kalimba', 4); } sag('Effekt-Ton ' + api.status() + ' (L)'); }
   };
-  Object.keys(K).forEach(function(n){ api[n] = function(a){ spiel(n, a); }; });
+  /* Nur pointierte Momente klingen (Sebastian, 21.11.2026: Effekt-Klaenge bei jeder Einblendung sind zu viel).
+     Erlaubt: Boersenglocke, Streichungen in der Police, Stempel "widerlegt" bei Erdoes. Alles andere bleibt stumm. */
+  var ERLAUBT = { 'k4-boerse:glocke': 1, 'k5-police:stempel': 1, 'k1-erdoes:stempel': 1 };
+  function folieId(){ var a = document.querySelector('.slide.active'); return a ? a.id : ''; }
+  Object.keys(K).forEach(function(n){ api[n] = function(a){ if (ERLAUBT[folieId() + ':' + n]) spiel(n, a); }; });
   return api;
 })();
 window.DfFX = FX;
