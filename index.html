@@ -11002,5 +11002,11 @@ window.Deck = {go:go, next:next, prev:prev, presenter:presenterOpen, palette:pal
 })();
 
 </script>
-</body>
+<script>/* Vorschau am Handy: Tippen links zurueck, rechts vor, auch auf Filmen. Nur in dieser Vorschau. */
+(function(){if(!('ontouchstart' in window))return;var x0,y0,t0,sperre=0;
+document.addEventListener('touchstart',function(e){if(e.touches.length!==1)return;x0=e.touches[0].clientX;y0=e.touches[0].clientY;t0=Date.now();},{passive:true,capture:true});
+document.addEventListener('touchend',function(e){if(x0==null)return;var t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0,dt=Date.now()-t0;x0=null;
+if(Math.abs(dx)>12||Math.abs(dy)>12||dt>500)return;var z=e.target;if(z.closest&&z.closest('button,a,input,select,textarea,.fk-play,#overview,.pal,.ov'))return;
+e.preventDefault();sperre=Date.now()+600;if(!window.Deck)return;if(t.clientX<window.innerWidth*0.35)Deck.prev();else Deck.next();},{passive:false,capture:true});
+document.addEventListener('click',function(e){if(Date.now()<sperre){e.stopImmediatePropagation();e.preventDefault();}},true);})();</script></body>
 </html>
